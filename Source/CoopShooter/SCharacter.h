@@ -8,6 +8,7 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+class ASWeapon;
 
 UCLASS()
 class COOPSHOOTER_API ASCharacter : public ACharacter
@@ -34,11 +35,21 @@ protected:
 
 	void EndZoom();
 
+	void Fire();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArmComp;
+
+	ASWeapon* CurrentWeapon;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapons")
+	TSubclassOf<ASWeapon> StarterWeapon;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	FName WeaponAttachedSocketName;
 
 	bool bWantsToZoom;
 
