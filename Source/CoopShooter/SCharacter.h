@@ -37,6 +37,8 @@ protected:
 
 	void Fire();
 
+	void DoJump();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp;
 

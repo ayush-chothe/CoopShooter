@@ -83,6 +83,12 @@ void ASCharacter::Fire()
 	}
 }
 
+
+void ASCharacter::DoJump()
+{
+	Jump();
+}
+
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
 {
@@ -114,6 +120,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("ADS", EInputEvent::IE_Released, this, &ASCharacter::EndZoom);
 
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ASCharacter::Fire);
+
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASCharacter::DoJump);
 }
 
 FVector ASCharacter::GetPawnViewLocation() const
