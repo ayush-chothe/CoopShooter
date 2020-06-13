@@ -74,6 +74,16 @@ void ASWeapon::Fire()
 
 		}
 
+		APawn* MyOwnerPawn = Cast<APawn>(MyOwner);
+		if (MyOwnerPawn)
+		{
+			APlayerController* PC = Cast<APlayerController>(MyOwnerPawn->GetController());
+			if (PC)
+			{
+				PC->ClientPlayCameraShake(CameraShaker);
+			}
+		}
+
 	}
 }
 
