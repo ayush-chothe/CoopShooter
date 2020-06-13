@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 #include "SWeapon.h"
 
 // Sets default values
@@ -15,6 +16,8 @@ ASWeapon::ASWeapon()
 
 	SocketName = "MuzzleSocket";
 	TrailTargetName = "BeamEnd";
+
+	BaseDamage = 20.0f;
 }
 
 
@@ -36,6 +39,7 @@ void ASWeapon::Fire()
 		QueryParams.AddIgnoredActor(MyOwner);
 		QueryParams.AddIgnoredActor(this);
 		QueryParams.bTraceComplex = true;
+		QueryParams.bReturnPhysicalMaterial = true;
 
 		FVector TrailEndPoint = TraceEnd;
 
@@ -44,14 +48,41 @@ void ASWeapon::Fire()
 		{
 			AActor* HitActor = Hit.GetActor();
 
-			if (ImpactEffect)
+			EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+
+			float ActualDamage = BaseDamage;
+
+			if (SurfaceType == SurfaceType2)
 			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+				ActualDamage *= 4;
 			}
+
+			UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, HitActor->GetInstigatorController(), this, DamageType);
+
+			UParticleSystem* SelectedEffect;
+
+			switch (SurfaceType)
+			{
+			case SurfaceType1: // FleshDefault
+			case SurfaceType2: // FleshVunerable
+				SelectedEffect = FleshImpactEffect;
+				break;
+			default:
+				SelectedEffect = ImpactEffect;
+				break;
+			}
+
+			if (SelectedEffect)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+			}
+
 
 			TrailEndPoint = Hit.ImpactPoint;
 
-			UGameplayStatics::ApplyPointDamage(HitActor, 20.f, ShotDirection, Hit, HitActor->GetInstigatorController(), this, DamageType);
+			
+
+			
 		}
 
 		//DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.f, 0, 1.f);

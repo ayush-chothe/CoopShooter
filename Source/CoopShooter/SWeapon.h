@@ -40,10 +40,16 @@ protected:
 	UParticleSystem* ImpactEffect;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
+	UParticleSystem* FleshImpactEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
 	UParticleSystem* TrailEffect;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera")
 	TSubclassOf<UCameraShake> CameraShaker;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float BaseDamage;
 
 
 
