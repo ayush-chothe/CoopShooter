@@ -6,6 +6,7 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "TimerManager.h"
 #include "SWeapon.h"
 
 // Sets default values
@@ -18,8 +19,16 @@ ASWeapon::ASWeapon()
 	TrailTargetName = "BeamEnd";
 
 	BaseDamage = 20.0f;
+	RateOfFire = 600;
 }
 
+
+void ASWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+
+	TimeBetweenShots = 60 / RateOfFire;
+}
 
 void ASWeapon::Fire()
 {
@@ -77,12 +86,7 @@ void ASWeapon::Fire()
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
 			}
 
-
 			TrailEndPoint = Hit.ImpactPoint;
-
-			
-
-			
 		}
 
 		//DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::Red, false, 1.f, 0, 1.f);
@@ -115,8 +119,20 @@ void ASWeapon::Fire()
 			}
 		}
 
+		LastFireTime = GetWorld()->TimeSeconds;
 	}
 }
 
+void ASWeapon::StartFire()
+{
+	float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds,0.f);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, FirstDelay);
+}
+
+void ASWeapon::StopFire()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_TimeBetweenShots);
+}
 
 

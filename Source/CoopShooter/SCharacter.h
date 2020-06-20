@@ -33,9 +33,11 @@ protected:
 
 	void BeginZoom();
 
-	void EndZoom();
+	void StartFire();
 
-	void Fire();
+	void StopFire();
+
+	void EndZoom();
 
 	void DoJump();
 
@@ -45,13 +47,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArmComp;
 
-	ASWeapon* CurrentWeapon;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Weapons")
 	TSubclassOf<ASWeapon> StarterWeapon;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	FName WeaponAttachedSocketName;
+
+	ASWeapon* CurrentWeapon;
 
 	bool bWantsToZoom;
 
