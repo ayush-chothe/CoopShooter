@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "SWeapon.h"
 #include "CoopShooter.h"
+#include "SHealthComponent.h"
 #include "SCharacter.h"
 
 // Sets default values
@@ -17,6 +18,8 @@ ASCharacter::ASCharacter()
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArmComp->SetupAttachment(RootComponent);
 	SpringArmComp->bUsePawnControlRotation = true;
+
+	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
 
 	GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(COLLISION_WEAPON, ECR_Ignore);
@@ -46,6 +49,9 @@ void ASCharacter::BeginPlay()
 		CurrentWeapon->SetOwner(this);
 		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponAttachedSocketName);
 	}
+
+	HealthComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChange);
+
 }
 
 void ASCharacter::MoveForward(float Value)
@@ -98,6 +104,19 @@ void ASCharacter::StopFire()
 void ASCharacter::DoJump()
 {
 	Jump();
+}
+
+
+void ASCharacter::OnHealthChange(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
+{
+	if (Health <= 0 && !bDied) 
+	{
+		bDied = true;
+
+		GetMovementComponent()->StopMovementImmediately();
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		DetachFromControllerPendingDestroy();
+	}
 }
 
 // Called every frame

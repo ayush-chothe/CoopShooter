@@ -9,6 +9,7 @@
 class UCameraComponent;
 class USpringArmComponent;
 class ASWeapon;
+class USHealthComponent;
 
 UCLASS()
 class COOPSHOOTER_API ASCharacter : public ACharacter
@@ -41,11 +42,17 @@ protected:
 
 	void DoJump();
 
+	UFUNCTION()
+	void OnHealthChange(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArmComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USHealthComponent* HealthComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapons")
 	TSubclassOf<ASWeapon> StarterWeapon;
@@ -56,6 +63,9 @@ protected:
 	ASWeapon* CurrentWeapon;
 
 	bool bWantsToZoom;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bDied;
 
 	UPROPERTY(EditDefaultsOnly)
 	float ZoomedFOV;
